@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaaS TaskBoard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;display=swap" rel="stylesheet">
+    <style>
+        /* Base transition for columns */
+        .column {
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+        }
+        
+        /* JS state: when a dragged card is hovering over a column */
+        .column.drag-over {
+            background-color: #1a1a1a;
+            border-color: rgba(79, 70, 229, 0.5);
+            border-style: dashed;
+        }
+
+        /* JS generated element: Task Card */
+        .task-card {
+            background-color: #1c1c1c;
+            border: 1px solid #2a2a2a;
+            border-radius: 0.5rem; /* 8px */
+            padding: 0.875rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.875rem; /* text-sm */
+            color: #e5e5e5;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+            cursor: grab;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        .task-card:hover {
+            border-color: #404040;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .task-card:active {
+            cursor: grabbing;
+        }
+
+        /* JS state: when a card is being dragged */
+        .task-card.dragging {
+            opacity: 0.4;
+            transform: scale(0.98);
+            border-color: #4f46e5;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            z-index: 50;
+        }
+
+        /* JS generated element: Delete Button */
+        .delete-btn {
+            color: #737373;
+            background: transparent;
+            border: none;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-size: 0.75rem; /* text-xs */
+        }
+
+        .delete-btn:hover {
+            color: #fca5a5;
+            background-color: rgba(127, 29, 29, 0.6);
+        }
+        
+        /* Remove default focus outline on input for cleaner look */
+        input:focus {
+            outline: none;
+        }
+    </style>
+</head>
+<body class="bg-[#0a0a0a] text-neutral-300 antialiased min-h-screen flex flex-col selection:bg-indigo-500/30 selection:text-indigo-200">
+
+    <!-- Navigation / Header Area -->
+    <header class="w-full border-b border-[#262626] bg-[#0a0a0a]/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 md:px-6 h-16 flex flex-col sm:flex-row items-center justify-between gap-4">
+            
+            <!-- Logo -->
+            <h1 class="text-xl font-medium tracking-tight text-neutral-100 select-none w-full sm:w-auto text-center sm:text-left">
+                taskboard.
+            </h1>
+            
+            <!-- Add Task Form -->
+            <div class="add-task-container flex items-center gap-3 w-full max-w-md ml-auto">
+                <div class="relative flex-1">
+                    <iconify-icon icon="solar:pen-new-square-linear" stroke-width="1.5" class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500"></iconify-icon>
+                    <input type="text" id="new-task-input" placeholder="Enter a new task..." class="w-full bg-[#141414] border border-[#262626] text-sm text-neutral-200 placeholder:text-neutral-500 rounded-lg pl-9 pr-4 py-2 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm">
+                </div>
+                <button id="add-task-btn" class="bg-indigo-600 text-neutral-50 text-sm font-medium py-2 px-4 rounded-lg hover:bg-indigo-500 transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#0a0a0a] focus:ring-indigo-600 flex items-center justify-center gap-2 shadow-sm whitespace-nowrap">
+                    <iconify-icon icon="solar:add-circle-linear" stroke-width="1.5" class="text-lg"></iconify-icon>
+                    <span class="hidden sm:inline">Add Task</span>
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Main Board -->
+    <main class="board flex-1 max-w-6xl mx-auto w-full px-4 md:px-6 py-8 md:py-10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start h-full">
+            
+            <!-- To-Do Column -->
+            <div class="column bg-[#141414] border border-[#262626] rounded-xl p-4 md:p-5 flex flex-col min-h-[500px]" id="todo">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-[#262626]/60">
+                    <h2 class="text-sm font-medium tracking-tight text-neutral-200 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-neutral-600"></span> 
+                        To-Do
+                    </h2>
+                </div>
+                <div class="task-list flex-1 flex flex-col gap-3" id="todo-list">
+                    <!-- Tasks injected by script.js -->
+                </div>
+            </div>
+
+            <!-- In Progress Column -->
+            <div class="column bg-[#141414] border border-[#262626] rounded-xl p-4 md:p-5 flex flex-col min-h-[500px]" id="in-progress">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-[#262626]/60">
+                    <h2 class="text-sm font-medium tracking-tight text-neutral-200 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]"></span> 
+                        In Progress
+                    </h2>
+                </div>
+                <div class="task-list flex-1 flex flex-col gap-3" id="inprogress-list">
+                    <!-- Tasks injected by script.js -->
+                </div>
+            </div>
+
+            <!-- Done Column -->
+            <div class="column bg-[#141414] border border-[#262626] rounded-xl p-4 md:p-5 flex flex-col min-h-[500px]" id="done">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-[#262626]/60">
+                    <h2 class="text-sm font-medium tracking-tight text-neutral-200 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]"></span> 
+                        Done
+                    </h2>
+                </div>
+                <div class="task-list flex-1 flex flex-col gap-3" id="done-list">
+                    <!-- Tasks injected by script.js -->
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- JavaScript Reference from original logic -->
+    <script src="script.js"></script>
+
+</body></html>
