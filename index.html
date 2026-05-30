@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>taskboard.</title>
@@ -80,8 +81,24 @@
         }
         
         /* Remove default focus outline on input for cleaner look */
-        input:focus {
+        textarea:focus {
             outline: none;
+        }
+
+        /* Custom scrollbar for textarea */
+        textarea::-webkit-scrollbar {
+            width: 6px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: #141414;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background-color: #3f3f46;
+            border-radius: 8px;
+        }
+        textarea::-webkit-scrollbar-thumb:hover {
+            background-color: #52525b;
         }
     </style>
 </head>
@@ -89,22 +106,27 @@
 
     <!-- Navigation / Header Area -->
     <header class="w-full border-b border-[#262626] bg-[#0a0a0a]/80 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-4 md:px-6 h-16 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="max-w-6xl mx-auto px-4 md:px-6 py-5 flex flex-col gap-5">
             
             <!-- Logo -->
-            <h1 class="text-xl font-medium tracking-tight text-neutral-100 select-none w-full sm:w-auto text-center sm:text-left">
+            <h1 class="text-xl font-medium tracking-tight text-neutral-100 select-none text-center sm:text-left">
                 taskboard.
             </h1>
             
-            <!-- Add Task Form -->
-            <div class="add-task-container flex items-center gap-3 w-full max-w-md ml-auto">
-                <div class="relative flex-1">
-                    <iconify-icon icon="solar:pen-new-square-linear" stroke-width="1.5" class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500"></iconify-icon>
-                    <input type="text" id="new-task-input" placeholder="Enter a new task..." class="w-full bg-[#141414] border border-[#262626] text-sm text-neutral-200 placeholder:text-neutral-500 rounded-lg pl-9 pr-4 py-2 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm">
+            <!-- Add Task Form - UPDATED SECTION -->
+            <div class="add-task-container flex flex-col gap-4 w-full max-w-2xl mx-auto w-full">
+                <div class="relative w-full">
+                    <iconify-icon icon="solar:pen-new-square-linear" stroke-width="1.5" class="absolute left-3 top-3 text-neutral-500"></iconify-icon>
+                    <!-- Replaced input with textarea for multi-line support -->
+                    <textarea 
+                        id="new-task-input" 
+                        placeholder="Enter your task details... You can write multiple lines, code snippets, or long descriptions here." 
+                        class="w-full bg-[#141414] border border-[#262626] text-sm text-neutral-200 placeholder:text-neutral-500 rounded-lg pl-9 pr-4 py-3 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm resize-y min-h-[120px] max-h-[320px] leading-relaxed font-mono text-sm"
+                    ></textarea>
                 </div>
-                <button id="add-task-btn" class="bg-indigo-600 text-neutral-50 text-sm font-medium py-2 px-4 rounded-lg hover:bg-indigo-500 transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#0a0a0a] focus:ring-indigo-600 flex items-center justify-center gap-2 shadow-sm whitespace-nowrap">
+                <button id="add-task-btn" class="bg-indigo-600 text-neutral-50 text-sm font-medium py-2.5 px-5 rounded-lg hover:bg-indigo-500 active:bg-indigo-700 transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#0a0a0a] focus:ring-indigo-600 flex items-center justify-center gap-2 shadow-sm self-end">
                     <iconify-icon icon="solar:add-circle-linear" stroke-width="1.5" class="text-lg"></iconify-icon>
-                    <span class="hidden sm:inline">Add Task</span>
+                    <span>Add New Task</span>
                 </button>
             </div>
 
